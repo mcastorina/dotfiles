@@ -1,0 +1,16 @@
+scroll_down             j Down
+scroll_up               k Up
+scroll_left             h Left
+scroll_right            l Right
+next_img                n space
+prev_img                N BackSpace
+toggle_fullscreen       f
+jump_first              g
+jump_last               G
+jump_fwd                d Next
+jump_back               u Prior
+toggle_filenames        o
+
+save_filelist
+toggle_pause
+toggle_keep_vp

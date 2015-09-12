@@ -1,0 +1,222 @@
+// Addons
+////////////////////////////////////////////////////////////////////////////////
+require("adblockplus.js");
+homepage = "https://duckduckgo.com/"
+
+// download window in new buffer
+download_buffer_automatic_open_target=OPEN_NEW_BUFFER_BACKGROUND;
+
+// default directory for downloads and shell commands
+cwd = get_home_directory();
+cwd.append("downloads");
+
+// use vim as external editor
+editor_shell_command = "urxvt -e vim";
+
+// view source in editor
+view_source_use_external_editor = true;
+
+// external programs for handling various mime types
+external_content_handlers.set("application/pdf", "mupdf");
+external_content_handlers.set("video/*", "mpv");
+
+// youtube search
+define_webjump("youtube", "https://youtube.com/results?search_query=%s");
+
+// amazon search
+define_webjump("amazon", "http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=%s");
+
+// open current youtube video with youtube-viewer
+require("external-editor.js");
+define_key(youtube_player_keymap, "v", "mpv-viewer");
+interactive("mpv-viewer",
+            "Open the current video with mpv",
+            function youtube_viewer (I) {
+                yield shell_command("mpv \"" +
+                I.buffer.display_uri_string + "\"");
+            });
+
+// Theme
+////////////////////////////////////////////////////////////////////////////////
+theme_load_paths.unshift("~/.conkeror.mozdev.org/conkeror/themes/");
+theme_unload("default");
+theme_load("conkeror-theme-zenburn");
+
+// Tabs
+////////////////////////////////////////////////////////////////////////////////
+require("favicon.js");
+require("new-tabs.js");
+tab_bar_show_index = true;
+tab_bar_show_icon = true;
+
+// Middle click opens link in new buffer
+////////////////////////////////////////////////////////////////////////////////
+require("clicks-in-new-buffer.js");
+// Set to either OPEN_NEW_BUFFER or OPEN_NEW_BUFFER_BACKGROUND
+clicks_in_new_buffer_target = OPEN_NEW_BUFFER_BACKGROUND;
+// Set to 0 = left mouse, 1 = middle mouse, 2 = right mouse
+clicks_in_new_buffer_button = 1;
+
+// vim movement
+////////////////////////////////////////////////////////////////////////////////
+define_key(default_global_keymap, ":", "execute-extended-command");
+
+define_key(default_global_keymap, "h", "backward-char");
+define_key(default_global_keymap, "j", "forward-line");
+define_key(default_global_keymap, "k", "backward-line");
+define_key(default_global_keymap, "l", "forward-char");
+
+define_key(default_global_keymap, "C-f", "forward-page");
+define_key(default_global_keymap, "C-b", "backward-page");
+
+define_key(content_buffer_normal_keymap, "0", "beginning-of-line");
+define_key(content_buffer_normal_keymap, "$", "end-of-line");
+define_key(content_buffer_normal_keymap, "g", "beginning-of-first-line");
+define_key(content_buffer_normal_keymap, "G", "end-of-last-line");
+
+define_key(default_global_keymap, "o", "find-url-new-buffer");
+define_key(default_global_keymap, "O", "find-url");
+define_key(default_global_keymap, "C-o", "find-url-new-window");
+
+define_key(content_buffer_normal_keymap, "C-a", "cmd_selectAll");
+define_key(content_buffer_normal_keymap, "C-h", "back");
+define_key(default_global_keymap, "C-j", "buffer-next");
+define_key(default_global_keymap, "C-k", "buffer-previous");
+define_key(content_buffer_normal_keymap, "C-l", "forward");
+define_key(default_global_keymap, "C-J", "buffer-move-forward");
+define_key(default_global_keymap, "C-K", "buffer-move-backward");
+
+define_key(content_buffer_normal_keymap, "H", "cmd_selectCharPrevious");
+define_key(content_buffer_normal_keymap, "J", "cmd_selectLineNext");
+define_key(content_buffer_normal_keymap, "K", "cmd_selectLinePrevious");
+define_key(content_buffer_normal_keymap, "L", "cmd_selectCharNext");
+define_key(content_buffer_normal_keymap, "B", "cmd_selectWordPrevious");
+define_key(content_buffer_normal_keymap, "W", "cmd_selectWordNext");
+define_key(content_buffer_normal_keymap, "Y", "copy-url");
+define_key(content_buffer_normal_keymap, "P", "paste-url-new-buffer");
+define_key(content_buffer_normal_keymap, "y", "cmd_copy");
+define_key(text_keymap, "C-a", "cmd_selectAll");
+define_key(text_keymap, "C-y", "cmd_copy");
+define_key(minibuffer_keymap, "C-y", "cmd_copy");
+define_key(content_buffer_text_keymap, "C-p", "cmd_paste");
+define_key(content_buffer_textarea_keymap, "C-p", "cmd_paste");
+define_key(minibuffer_keymap, "C-p", "cmd_paste");
+
+// follow links
+define_key(content_buffer_normal_keymap, "f", "follow");
+define_key(content_buffer_normal_keymap, "F", "follow-new-buffer-background");
+
+// copy link url
+define_key(content_buffer_normal_keymap, "c", "copy");
+
+define_key(content_buffer_normal_keymap, "/", "isearch-forward");
+define_key(content_buffer_normal_keymap, "?", "isearch-backward");
+define_key(content_buffer_normal_keymap, "n", "isearch-continue-forward");
+define_key(content_buffer_normal_keymap, "N", "isearch-continue-backward");
+
+define_key(default_global_keymap, "C-d", "scroll-down-10");
+define_key(default_global_keymap, "C-u", "scroll-up-10");
+
+interactive("scroll-down-10",
+            "Scroll down 10 lines",
+            function scroll_down (I) {
+                for (let i = 0; i < 10; ++i) {
+                    I.buffer.do_command("cmd_scrollLineDown");
+                }
+            });
+interactive("scroll-up-10",
+            "Scroll up 10 lines",
+            function scroll_up (I) {
+                for (let i = 0; i < 10; ++i) {
+                    I.buffer.do_command("cmd_scrollLineUp");
+                }
+            });
+interactive("copy-url",
+            "Copy the current url to clipboard",
+            function copy_url (I) {
+                writeToClipboard(I.buffer.display_uri_string);
+            });
+
+
+// Revive last closed buffer
+////////////////////////////////////////////////////////////////////////////////
+define_key(default_global_keymap, "u", "revive-buffer");
+define_key(content_buffer_normal_keymap, "u", "revive-buffer");
+
+var kill_buffer_original = kill_buffer_original || kill_buffer;
+
+var killed_buffer_urls = [];
+var killed_buffer_histories = [];
+
+// remember_killed_buffer
+kill_buffer = function (buffer, force) {
+    var hist = buffer.web_navigation.sessionHistory;
+
+    if (buffer.display_uri_string && hist) {
+        killed_buffer_histories.push(hist);
+        killed_buffer_urls.push(buffer.display_uri_string);
+    }
+
+    kill_buffer_original(buffer,force);
+};
+
+interactive("revive-buffer",
+    "Loads url from a previously killed buffer",
+    function restore_killed_buffer (I) {
+        if (killed_buffer_urls.length !== 0) {
+            var url = yield I.minibuffer.read(
+                $prompt = "Restore killed url:",
+                $completer = new all_word_completer($completions = killed_buffer_urls),
+                $default_completion = killed_buffer_urls[killed_buffer_urls.length - 1],
+                $auto_complete = "url",
+                $auto_complete_initial = true,
+                $auto_complete_delay = 0,
+                $require_match = true);
+
+            var window = I.window;
+            var creator = buffer_creator(content_buffer);
+            var idx = killed_buffer_urls.indexOf(url);
+
+            // Create the buffer
+            var buf = creator(window, null);
+
+            // Recover the history
+            buf.web_navigation.sessionHistory = killed_buffer_histories[idx];
+
+            // This line may seem redundant, but it's necessary.
+            var original_index = buf.web_navigation.sessionHistory.index;
+            buf.web_navigation.gotoIndex(original_index);
+
+            // Focus the new tab
+            window.buffers.current = buf;
+
+            // Remove revived from cemitery
+            killed_buffer_urls.splice(idx,1);
+            killed_buffer_histories.splice(idx,1);
+        } else {
+            I.window.minibuffer.message("No killed buffer urls");
+        }
+    });
+
+// Switch to buffer using numbers
+////////////////////////////////////////////////////////////////////////////////
+function define_switch_buffer_key (key, buf_num) {
+    define_key(default_global_keymap, key,
+               function (I) {
+                   switch_to_buffer(I.window,
+                                    I.window.buffers.get_buffer(buf_num));
+               });
+}
+for (let i = 0; i < 10; ++i) {
+    define_switch_buffer_key(String((i+1)%10), i);
+}
+
+// Switch to previously opened buffer
+////////////////////////////////////////////////////////////////////////////////
+interactive("switch-to-other-buffer",
+            "Switch to the previously open buffer",
+            function (I) {
+                var blist = I.window.buffers.buffer_list
+                if (blist.length > 1)
+                    switch_to_buffer(I.window, blist[1]);
+            });

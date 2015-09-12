@@ -1,0 +1,6 @@
+#!/bin/bash
+# Splits a message on the first ';' and sends it to notify-send
+args=( "$@" )
+summary="$( cut -d ';' -f 1 <<< "$1" )"
+body="$( cut -d ';' -f 2- <<< "$1" )"
+notify-send "$summary" "$body" ${args[@]:1}
