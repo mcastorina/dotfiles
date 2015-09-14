@@ -57,5 +57,4 @@ echo 'export DBUS_SESSION_BUS_ADDRESS' >> $HOME/.dbus/Xdbus
 unclutter -idle 10 &
 
 # Start i3 and log to ~/.i3/logfile
-echo "Starting at $(date)" >> ~/.i3/logfile
-exec /usr/bin/i3 -V -d all >> ~/.i3/logfile
+exec /usr/bin/i3
