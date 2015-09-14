@@ -16,6 +16,10 @@
     ~/.config/htop/htoprc:
         path: htoprc
         create: true
+    ~/.i3/config:
+        path: i3-config
+    ~/.i3/i3bar.py:
+        path: i3bar.py
     ~/.inputrc:
         path: .inputrc
     ~/bin/kb-backlight:
