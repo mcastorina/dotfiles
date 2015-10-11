@@ -39,20 +39,29 @@ def internet(link=''):
         wlan = run_cmd("ip link show | grep -o wlp.*:")[:-1]
         if (eth == '' and wlan == ''):
             return output_item("No link", red)
-        link = eth if eth != '' else wlan
+        if (eth != ''): internet(eth)
+        if (wlan != ''):
+            if (eth != ''):
+                output_separator()
+            internet(wlan)
+        return
 
     if 'Link detected: no' in run_cmd("ethtool " + link):
         return output_item('Not connected', red)
+    addr = run_cmd("ip route show | grep "+link+" | grep -o 'src .*$'")
+    addr = addr[4:addr.find(' ', 5)]
 
     if (link[0] == 'w'):
         ssid = run_cmd("iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'")
         output_item(ssid + ' ', green)
         printf(',')
+        output_item('('+addr+') ', light_gray)
+        printf(',')
         perc = run_cmd("awk 'NR==3 {print substr($3,0,length($3)-1) \"%\"}''' /proc/net/wireless")
         return output_item(perc, white)
-    speed = run_cmd("ethtool " + link + " | grep Speed")
-    speed = speed[speed.find('Speed:'):][7:]
-    return output_item("Ethernet ("+speed+")", green)
+    output_item("Ethernet ", green)
+    printf(',')
+    return output_item("("+addr+")", light_gray)
 
 def volume():
     vol = run_cmd("amixer -c 0 get Master -M | tail -1")
