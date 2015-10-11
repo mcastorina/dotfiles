@@ -47,6 +47,8 @@ alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
 
 alias youtube-viewer="youtube-viewer --video-player=mpv"
 alias since="ps -o etime= -p"
+alias octave="octave-cli"
+alias matlab="matlab -nodesktop -nosplash"
 
 alias public-ip="curl icanhazip.com"
 
