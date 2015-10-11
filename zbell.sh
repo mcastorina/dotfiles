@@ -21,12 +21,12 @@ zmodload zsh/datetime || return
 autoload -Uz add-zsh-hook || return
 
 # initialize zbell_duration if not set
-(( ${+zbell_duration} )) || zbell_duration=30
+(( ${+zbell_duration} )) || zbell_duration=60
 
 # initialize zbell_ignore if not set
 (( ${+zbell_ignore} )) || zbell_ignore=($EDITOR $PAGER ssh su \
     youtube-viewer mpv mupdf evince libreoffice wyrd feh man ranger \
-    python octave-cli stopwatch watch)
+    python octave octave-cli matlab stopwatch watch gdb htop)
 
 # initialize it because otherwise we compare a date and an empty string
 # the first time we see the prompt. it's fine to have lastcmd empty on the
@@ -58,8 +58,11 @@ zbell_end() {
         fi
     done
 
-    if (( ! $has_ignored_cmd )) && (( ran_long )); then
-        notify-send "Job Finished" "$zbell_lastcmd"
+    if [[ $zbell_lastcmd != "" ]]; then
+        if (( ! $has_ignored_cmd )) && (( ran_long )); then
+            notify-send "Job Finished" "$zbell_lastcmd"
+        fi
+        zbell_lastcmd=""
     fi
 }
 
