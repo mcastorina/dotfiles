@@ -6,11 +6,11 @@ if exists("syntax_on")
   endif
 let g:colors_name="lapis256"
 
-hi Normal          ctermfg=251      ctermbg=234        cterm=none
+hi Normal          ctermfg=251      ctermbg=234         cterm=none
 
 hi Comment         ctermfg=245      ctermbg=none        cterm=none
-hi Conceal         ctermfg=230      ctermbg=237        cterm=none
-hi CommentURL      ctermfg=230      ctermbg=237        cterm=underline
+hi Conceal         ctermfg=230      ctermbg=237         cterm=none
+hi CommentURL      ctermfg=230      ctermbg=237         cterm=underline
 hi SpecialComment  ctermfg=246      ctermbg=none        cterm=none
 
 hi Constant        ctermfg=051      ctermbg=none        cterm=bold
@@ -58,10 +58,10 @@ hi PmenuSbar       ctermfg=210      ctermbg=000         cterm=none
 hi PmenuThumb      ctermfg=210      ctermbg=000         cterm=none
 hi LineNr          ctermfg=240      ctermbg=none        cterm=none
 hi NonText         ctermfg=244      ctermbg=none        cterm=none
-hi SpecialKey      ctermfg=237      ctermbg=235
+hi SpecialKey      ctermfg=238      ctermbg=236
 
-hi Visual          ctermfg=000     ctermbg=219
-hi Search          ctermfg=000     ctermbg=219
+hi Visual          ctermfg=000      ctermbg=219
+hi Search          ctermfg=000      ctermbg=219
 
 hi BookmarkSign             ctermfg=075         ctermbg=none
 hi BookmarkLine             ctermfg=075         ctermbg=none
