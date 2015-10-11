@@ -18,8 +18,10 @@
         create: true
     ~/.i3/config:
         path: i3-config
+        create: true
     ~/.i3/i3bar.py:
         path: i3bar.py
+        create: true
     ~/.inputrc:
         path: .inputrc
     ~/bin/kb-backlight:
