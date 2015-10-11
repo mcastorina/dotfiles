@@ -1,16 +1,14 @@
 set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call plug#begin('~/.vim/plugged')
 
-Plugin 'gmarik/Vundle.vim'
-"Plugin 'Valloric/YouCompleteMe'
-Bundle 'myusuf3/numbers.vim'
-Plugin 'taglist.vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'sjl/gundo.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'myusuf3/numbers.vim'
+Plug 'taglist.vim'
+Plug 'scrooloose/syntastic'
+Plug 'sjl/gundo.vim'
+Plug 'tpope/vim-fugitive'
 
-call vundle#end()
+call plug#end()
 filetype plugin indent on
 
 syntax on
@@ -34,6 +32,8 @@ set incsearch
 "set ignorecase
 "set smartcase
 set hlsearch
+
+set ff=unix
 
 " Escape key also mapped as pushing j and k
 inoremap jk <Esc>
