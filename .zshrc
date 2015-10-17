@@ -50,8 +50,6 @@ alias since="ps -o etime= -p"
 alias octave="octave-cli"
 alias matlab="matlab -nodesktop -nosplash"
 
-alias public-ip="curl icanhazip.com"
-
 alias mv="mv -i"
 alias cp="cp -i"
 

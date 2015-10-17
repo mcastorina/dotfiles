@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+
+print_usage_string () {
+    echo -n "Usage: public-ip [OPTIONS]
+Print your public IP address
+
+  -4, --ipv4        Print IPv4 address (default)
+  -6, --ipv4        Print IPv6 address
+  -h, --help        Display this help and exit
+
+"
+}
+
+OPTS=$( getopt -o 46h -l ipv4,ipv6,help \
+    -n 'public-ip' -- "$@" )
+
+eval set -- "$OPTS"
+
+while true ; do
+    case $1 in
+        -4|--ipv4)
+            ipv4=1
+            shift 1 ;;
+        -6|--ipv6)
+            ipv6=1
+            shift 1 ;;
+        -h|--help)
+            print_usage_string ; exit 0 ; shift 1;;
+        --) shift 1 ; break ;;
+        *) echo "Invalid argument: $1" ; print_usage_string ; exit 1 ;;
+    esac
+done
+
+VERBOSE=${VERBOSE:-0}
+ipv4=${ipv4:-2}
+ipv6=${ipv6:-0}
+
+if [[ $ipv6 == 1 ]]; then
+    if [[ $ipv4 == 1 ]]; then
+        curl "ipv4.icanhazip.com"
+    fi
+    curl "ipv6.icanhazip.com"
+else
+    curl "ipv4.icanhazip.com"
+fi
