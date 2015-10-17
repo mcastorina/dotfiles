@@ -10,6 +10,9 @@ jump_last               G
 jump_fwd                d Next
 jump_back               u Prior
 toggle_filenames        o
+zoom_in                 plus
+zoom_out                minus
+zoom_fit                equal
 
 save_filelist
 toggle_pause
