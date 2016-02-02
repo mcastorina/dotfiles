@@ -33,7 +33,7 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
 fi
 
 # wallpaper
-feh --bg-scale /home/miccah/.wallpaper &
+/home/miccah/.fehbg
 
 # clipboard
 autocutsel -fork &
@@ -42,10 +42,8 @@ autocutsel -selection PRIMARY -fork &
 # binds
 xbindkeys &
 
-# more space for popcorn time
-if ! [ -L /tmp/Popcorn-Time ] ; then
-    ln -s ~/tmp/Popcorn-Time /tmp/Popcorn-Time &
-fi
+# save now playing variable for i3 status
+export NOW_PLAYING=$HOME/.config/.now_playing
 
 # save dbus session variable
 touch $HOME/.dbus/Xdbus
@@ -53,8 +51,5 @@ chmod 600 $HOME/.dbus/Xdbus
 env | grep DBUS_SESSION_BUS_ADDRESS > $HOME/.dbus/Xdbus
 echo 'export DBUS_SESSION_BUS_ADDRESS' >> $HOME/.dbus/Xdbus
 
-# hide mouse cursor after idled for 10 seconds
-unclutter -idle 10 &
-
-# Start i3 and log to ~/.i3/logfile
+# Start i3
 exec /usr/bin/i3
