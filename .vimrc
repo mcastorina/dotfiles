@@ -7,6 +7,7 @@ Plug 'taglist.vim'
 Plug 'scrooloose/syntastic'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-commentary'
 
 call plug#end()
 filetype plugin indent on
@@ -34,19 +35,25 @@ set incsearch
 set hlsearch
 
 set ff=unix
+set foldmethod=syntax
 
 " Escape key also mapped as pushing j and k
 inoremap jk <Esc>
 inoremap kj <Esc>
-set timeoutlen=75
+autocmd InsertEnter * set timeoutlen=75
+autocmd InsertLeave * set timeoutlen=1000
 
 " This unsets the "last search pattern" register
 nnoremap ,. :noh<CR>:<Backspace>
 
-" F5 for taglist
+" Insert new line by hitting enter
+nnoremap <Enter> o<Esc>
+
+" Function binds
 nnoremap <F4> :GundoToggle<CR>
 nnoremap <F5> :TlistToggle<CR><C-W><C-H>
 nnoremap <F6> :NumbersToggle<CR>
+nnoremap <F7> :SyntasticToggleMode<CR>
 
 " Syntastic
 let g:syntastic_always_populate_loc_list = 1
@@ -94,12 +101,10 @@ function! StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 
-command Latex execute "silent !pdflatex % > /dev/null && evince %:r.pdf > /dev/null 2>&1 &" | redraw!
-
 " Printing
-set printexpr=PrintFile(v:fname_in)
-function PrintFile(fname)
-    call system("lp -d PDF " . a:fname)
+set printexpr=PrintFile(v:fname_in,expand('%:t'))
+function PrintFile(fname, oname)
+    call system("lp -d PDF " . a:fname . " -t " . a:oname)
     call delete(a:fname)
     return v:shell_error
 endfunc
@@ -114,3 +119,14 @@ function! s:CombineSelection(line1, line2, cp)
   execute 'let char = "\u'.a:cp.'"'
   execute a:line1.','.a:line2.'s/\%V[^[:cntrl:]]/&'.char.'/ge'
 endfunction
+
+" Compile LaTex files and remove extra files
+if !exists("g:latex_build") || !exists("g:latex_clean")
+    let g:latex_build = "/usr/bin/latexmk -pdf -cd"
+    let g:latex_clean = "/usr/bin/latexmk -cd -c"
+endif
+function! LatexBuild()
+    let name = " " . shellescape(bufname("%")) . " "
+    execute "!" . g:latex_build . name . "&&" . g:latex_clean . name
+endfunction
+command! -nargs=0 Latex call LatexBuild()
