@@ -23,37 +23,50 @@ fi
 # Load custom scripts
 source ~/.zgen/custom/zbell.sh
 
+# Disable auto cd
+unsetopt AUTO_CD
 
+# exports
 export EDITOR='vim'
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/miccah/bin"
+export PATH="/home/miccah/bin:$PATH"
 
+export school=~/documents/school/ut/spring-2016
+
+# binds
 bindkey -v
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^r' history-incremental-search-backward
-bindkey -M vicmd v edit-command-line
+bindkey -M vicmd 'v' edit-command-line
+bindkey -M viins 'jk' vi-cmd-mode
 
 # ls colors
 eval `dircolors -b ~/.dircolors`
 
 # aliases
-alias noblank="xset -dpms; xset s noblank; xset s off"
-alias blank="xset +dpms; xset s blank; xset s on"
-
-alias pacman="pacman --color=auto"
-
-alias ssid="iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'"
-alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
-
-alias youtube-viewer="youtube-viewer --video-player=mpv"
-alias since="ps -o etime= -p"
-alias octave="octave-cli"
-alias matlab="matlab -nodesktop -nosplash"
-
 alias mv="mv -i"
 alias cp="cp -i"
+alias pacman="pacman --color=auto"
+alias feh="feh --scale-down"
+alias youtube-viewer="youtube-viewer --video-player=mpv"
+alias matlab="matlab -nodesktop -nosplash"
+alias octave="octave-cli"
 
-export school=~/documents/school/ut/fall-2015
+alias open="xdg-open"
+alias noblank="xset -dpms; xset s noblank; xset s off"
+alias blank="xset +dpms; xset s blank; xset s on"
+alias ssid="iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'"
+alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
+alias since="ps -o etime= -p"
 
-# Disable using askpass for ssh authentication
-unset SSH_ASKPASS
+# functions
+fancy-ctrl-z () {
+    if [[ $#BUFFER -eq 0 ]]; then
+        bg
+        zle redisplay
+    else
+        zle push-input
+    fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
