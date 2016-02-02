@@ -18,14 +18,12 @@ dark_gray   = '#555555'
 
 def initialize():
     printf('{ "version": 1 } [')
-
 def output_item(data, color, width=0):
     printf(jdumps({
                "full_text": data,
                "color": color,
                "separator_block_width": width
            }))
-
 def output_separator():
     # assumes between two items
     printf(',')
@@ -62,24 +60,20 @@ def internet(link=''):
     output_item("Ethernet ", green)
     printf(',')
     return output_item("("+addr+")", light_gray)
-
 def volume():
-    vol = run_cmd("amixer -c 0 get Master -M | tail -1")
-    num = vol[vol.find('[')+1:vol.find(']')]
+    vol = run_cmd("pulseaudio-ctl full-status")
+    num = vol.split()[0]+'%'
     output_item('Volume: ', light_gray)
     printf(',')
-    if ('off' in vol):
+    if ('yes' in vol):
         return output_item(num, red)
     return output_item(num, white)
-
 def date():
     data = run_cmd("date +'%A, %B %d'")
     return output_item(data, white)
-
 def time():
     data = run_cmd("date +'%H:%M:%S'")
     return output_item(data, white)
-
 def battery():
     data = run_cmd("acpi")
     num = int(data[data.find(',')+2 : data.find('%')])
@@ -89,6 +83,38 @@ def battery():
             color = red
         return output_item(str(num)+'%', color)
     return output_item(str(num)+'%', blue)
+def music():
+    try:
+        data = run_cmd("cat $NOW_PLAYING")
+        return cmus(data) or pianobar(data)
+    except:
+        output_item('Error', red)
+        return True
+def cmus(data):
+    status = run_cmd("cmus-remote -Q | grep status")
+    if 'not running' in status: status = ''
+    elif 'stopped' in status:   status = red
+    elif 'paused' in status:    status = dark_gray
+    elif 'playing' in status:   status = white
+    else:                       status = ''
+    if len(data) > 0 and len(status) > 0:
+        length, current = run_cmd("cmus-remote -Q | grep -A 1 duration").split('\n')
+        length = int(length.split()[-1])
+        current = int(current.split()[-1])
+        perc = str(round(100.0 * current / length)).zfill(2)
+
+        output_item(data, status)
+        printf(',')
+        output_item(' [%s%%]' % perc, light_gray if status == white else dark_gray)
+        return True
+    return False
+def pianobar(data):
+    status = run_cmd("ps -e | grep pianobar")
+    if len(status) > 0:
+        output_item(data, white)
+        return True
+    return False
+
 
 def main():
     initialize()
@@ -96,6 +122,8 @@ def main():
     while (1):
         printf('[')
 
+        if music():
+            output_separator()
         internet()
         output_separator()
         volume()
@@ -112,5 +140,4 @@ def main():
 
         sys.stdout.flush()
         sleep(1)
-
 if __name__ == '__main__': main()
