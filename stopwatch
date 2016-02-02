@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# put into non-blocking mode
+if [ -t 0 ]; then stty -echo -icanon -icrnl time 0 min 0; fi
+KEYPRESS=''
+
+BEGIN=$(date +%s%3N)
+SAVE=0
+RUNNING=1
+ 
+while [ "x$KEYPRESS" = "x" ]; do
+   NOW=$(($(date +%s%3N)))
+   if [ "$RUNNING" = "1" ]; then
+       let DIFF=$(($NOW - $BEGIN + $SAVE))
+   else
+       let DIFF=$SAVE
+   fi
+   let MSECS=$(($DIFF % 1000))
+   let SECS=$((($DIFF / 1000) % 60))
+   let MINS=$((($DIFF / 60000) % 60))
+   let HOURS=$(($DIFF / 3600000))
+ 
+   printf "\r%02d:%02d:%02d.%03d" $HOURS $MINS $SECS $MSECS
+
+   KEYPRESS=$(cat -v)
+   case $KEYPRESS in
+       ' ') KEYPRESS=''
+            RUNNING=$(($RUNNING ^ 1))
+            if [ "$RUNNING" = "1" ]; then
+                BEGIN=$(date +%s%3N)
+            else
+                SAVE=$DIFF
+            fi ;;
+   esac
+
+   sleep 0.001
+done
+echo ''

@@ -57,6 +57,9 @@
     ~/.config/ranger/scope.sh:
         path: ranger/scope.sh
         create: true
+    ~/bin/stopwatch:
+        path: stopwatch
+        create: true
     ~/.config/user-dirs.dirs:
         path: user-dirs.dirs
         create: true
