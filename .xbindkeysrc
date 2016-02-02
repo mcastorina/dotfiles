@@ -70,6 +70,28 @@
 "touchpad-toggle.sh"
     XF86TouchpadToggle
 
+# cmus controls
+"cmus-remote --next"
+    Mod4 + j
+
+"cmus-remote --prev"
+    Mod4 + k
+
+"cmus-remote --pause"
+    Mod4 + p
+
+"cmus-remote --volume +10%"
+    Mod4 + 0
+
+"cmus-remote --volume -10%"
+    Mod4 + 9
+
+"cmus-remote --seek +5"
+    Mod4 + l
+
+"cmus-remote --seek -5"
+    Mod4 + h
+
 ##################################
 # End of xbindkeys configuration #
 ##################################
