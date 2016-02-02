@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Create a pdf file from a LaTex file using latexmk
+# The -c option will delete all nonessential files that are generated
+/usr/bin/latexmk -pdf -cd $@ && /usr/bin/latexmk -c -cd $@

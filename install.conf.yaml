@@ -45,6 +45,9 @@
     ~/bin/notify-split:
         path: notify-split
         create: true
+    ~/bin/pdflatexmk:
+        path: pdflatexmk
+        create: true
     ~/.config/ranger/colorschemes/lapis.py:
         path: ranger/lapis.py
         create: true
