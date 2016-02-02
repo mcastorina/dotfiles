@@ -11,6 +11,9 @@
     ~/.config/feh/keys:
         path: feh-keys
         create: true
+    ~/.config/mpd/mpd.conf:
+        path: mpd.conf
+        create: true
     ~/.gitconfig:
         path: .gitconfig
     ~/.config/htop/htoprc:
