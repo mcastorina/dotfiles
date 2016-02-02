@@ -25,6 +25,9 @@
     ~/.i3/i3bar.py:
         path: i3bar.py
         create: true
+    ~/bin/i3lock-wrapper:
+        path: i3lock-wrapper
+        create: true
     ~/bin/hdmi-toggle.sh:
         path: hdmi-toggle.sh
         create: true
