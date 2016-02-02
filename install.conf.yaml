@@ -54,6 +54,8 @@
     ~/.config/user-dirs.dirs:
         path: user-dirs.dirs
         create: true
+    ~/.vimperatorrc:
+        path: .vimperatorrc
     ~/.vimrc:
         path: .vimrc
     ~/.xbindkeysrc:
