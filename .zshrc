@@ -23,6 +23,11 @@ fi
 # Load custom scripts
 source ~/.zgen/custom/zbell.sh
 
+# configure zsh-syntax-highlighting
+ZSH_HIGHLIGHT_STYLES[path]='fg=45,underline'
+ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=45'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=196'
+
 # Disable auto cd
 unsetopt AUTO_CD
 
