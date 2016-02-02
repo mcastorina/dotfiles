@@ -27,7 +27,6 @@ URxvt*mouseWheelScrollPage:     false
 URxvt*background:               black
 URxvt*foreground:               white
 URxvt*colorUL:                  yellow
-URxvt*underlineColor:           yellow
 URxvt*cursorUnderline:          false
 URxvt*cursorBlink:              true
 URxvt*font:                     xft:DejaVu Sans Mono:size=12
@@ -47,6 +46,9 @@ URxvt.keysym.M-Escape:          perl:keyboard-select:activate
 
 URxvt.resize-font.smaller:      C-minus
 URxvt.resize-font.bigger:       C-S-plus
+
+! Make red stand out a bit more
+URxvt*color1:                   #ff2624
 
 rofi.fuzzy:                     true
 rofi.hide-scrollbar:            true
