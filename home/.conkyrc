@@ -1,0 +1,8 @@
+out_to_x no
+out_to_console yes
+update_interval 1.0
+total_run_times 0
+use_spacer none
+
+TEXT
+^i(/home/xenull/bin/dzicons/cpu.xbm) ^fg(\#97A1AB)${cpu}%^fg() ^i(/home/xenull/bin/dzicons/mem.xbm) ^fg(\#97A1AB)$memperc%^fg() ^i(/home/xenull/bin/dzicons/bug_01.xbm) ^fg(\#97A1AB)${running_processes running}^fg() ^i(/home/xenull/bin/dzicons/temp.xbm) ^fg(\#97A1AB)${acpitemp}°C^fg() ${if_match ${battery_percent BAT0} >=50}^i(/home/xenull/bin/dzicons/bat_full_01.xbm)${endif}${if_match ${battery_percent BAT0} <=49}^i(/home/xenull/bin/dzicons/bat_low_01.xbm)${endif}${if_match ${battery_percent BAT0} <= 10}^fg(\#CC0000)^i(/home/xenull/bin/dzicons/bat_empty_01.xbm)^fg()${endif} ^fg(\#97A1AB)${battery_percent}%^fg() ^i(/home/xenull/bin/dzicons/fs_02.xbm) ^fg(\#97A1AB)${fs_used_perc /}%^fg() ^i(/home/xenull/bin/dzicons/fs_01.xbm) ^fg(\#97A1AB)${fs_used_perc /home/xenull}%^fg() ${if_up wlan0}^i(/home/xenull/bin/dzicons/mail.xbm) ^fg(\#97A1AB)${execpi 120 python /home/xenull/bin/gmail.py}^fg() ^i(/home/xenull/bin/dzicons/net_up_03.xbm) ^fg(\#97A1AB)${upspeedf wlan0}^fg() ^i(/home/xenull/bin/dzicons/net_down_03.xbm) ^fg(\#97A1AB)${downspeedf wlan0}^fg()${endif} ${if_mpd_playing}^i(/home/xenull/bin/dzicons/note.xbm) ^fg(\#97A1AB)${mpd_smart}^fg() ${endif}
