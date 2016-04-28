@@ -8,6 +8,7 @@ if ! zgen saved; then
 
     # plugins
     zgen oh-my-zsh plugins/git
+    zgen oh-my-zsh plugins/last-working-dir
     zgen load zsh-users/zsh-syntax-highlighting
 
     # completions
@@ -56,6 +57,8 @@ alias feh="feh --scale-down"
 alias youtube-viewer="youtube-viewer --video-player=mpv"
 alias matlab="matlab -nodesktop -nosplash"
 alias octave="octave-cli"
+alias ipython="ipython --no-confirm-exit"
+alias ipython2="ipython2 --no-confirm-exit"
 
 alias open="xdg-open"
 alias noblank="xset -dpms; xset s noblank; xset s off"
@@ -75,3 +78,12 @@ fancy-ctrl-z () {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
+
+# if no options are given, then wget clipboard
+wget () {
+    if [[ $# -eq 0 ]]; then
+        /usr/bin/wget $(xsel -ob)
+    else
+        /usr/bin/wget $@
+    fi
+}
