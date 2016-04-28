@@ -33,7 +33,7 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
 fi
 
 # wallpaper
-/home/miccah/.fehbg
+$HOME/.fehbg &
 
 # clipboard
 autocutsel -fork &
@@ -41,6 +41,9 @@ autocutsel -selection PRIMARY -fork &
 
 # binds
 xbindkeys &
+
+# start compositor
+compton &
 
 # save now playing variable for i3 status
 export NOW_PLAYING=$HOME/.config/.now_playing
