@@ -36,6 +36,7 @@ set hlsearch
 
 set ff=unix
 set foldmethod=syntax
+set nowrap
 
 " Escape key also mapped as pushing j and k
 inoremap jk <Esc>
@@ -45,9 +46,6 @@ autocmd InsertLeave * set timeoutlen=1000
 
 " This unsets the "last search pattern" register
 nnoremap ,. :noh<CR>:<Backspace>
-
-" Insert new line by hitting enter
-nnoremap <Enter> o<Esc>
 
 " Function binds
 nnoremap <F4> :GundoToggle<CR>
@@ -77,6 +75,8 @@ nnoremap <C-H> <C-W>W
 " Tab moving
 nnoremap <C-J> :tabnext<CR>
 nnoremap <C-K> :tabprev<CR>
+nnoremap <PageDown> :tabm +<CR>
+nnoremap <PageUp>   :tabm -<CR>
 
 " Toggle folds
 map <Space> za
