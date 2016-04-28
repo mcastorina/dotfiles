@@ -3,7 +3,7 @@
 # Configuration
 STOW        ?= /usr/bin/stow
 STOW_TARGET ?= $$HOME
-STOW_DIR    ?= home
+STOW_DIR    ?= common home
 
 all: $(STOW_DIR)
 $(STOW_DIR): run

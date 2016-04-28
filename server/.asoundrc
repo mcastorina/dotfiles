@@ -1,0 +1,16 @@
+pcm.!default {
+    type pulse
+}
+ctl.!default {
+    type pulse
+}
+pcm.pulse {
+    type plug
+        slave {
+            pcm "hw:1,3"
+        }
+}
+ctl.pulse {
+    type hw
+    card 1
+}
