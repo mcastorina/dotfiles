@@ -13,6 +13,8 @@ toggle_filenames        o
 zoom_in                 plus
 zoom_out                minus
 zoom_fit                equal
+orient_3                H less
+orient_1                L greater
 
 save_filelist
 toggle_pause
