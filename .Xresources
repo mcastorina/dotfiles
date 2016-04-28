@@ -15,16 +15,17 @@ URxvt*skipScroll:               true
 URxvt*scrollBar:                false
 URxvt*scrollBar_right:          false
 URxvt*scrollBar_floating:       false
-URxvt*transparent:              true
+URxvt*depth:                    32
+URxvt*transparent:              false
 URxvt*tintColor:                #666666
 URxvt*blurRadius:               8
 URxvt*fading:                   30
 URxvt*utmpInhibit:              false
-URxvt*urgentOnBell:             true
-URxvt*visualBell:               true
-URxvt*mapAlert:                 true
+URxvt*urgentOnBell:             false
+URxvt*visualBell:               false
+URxvt*mapAlert:                 false
 URxvt*mouseWheelScrollPage:     false
-URxvt*background:               black
+URxvt*background:               [65]#222222
 URxvt*foreground:               white
 URxvt*colorUL:                  yellow
 URxvt*cursorUnderline:          false
@@ -49,14 +50,14 @@ URxvt.resize-font.bigger:       C-S-plus
 
 ! Make red stand out a bit more
 URxvt*color1:                   #ff2624
+URxvt*color5:                   #cc85e5
 
 rofi.fuzzy:                     true
 rofi.hide-scrollbar:            true
-rofi.bgalt:                     #396688
-rofi.hlbg:                      #2370ef
-rofi.bg:                        #285577
-rofi.fg:                        #ffffff
-rofi.bc:                        #aaaaaa
 rofi.bw:                        2
 rofi.terminal:                  urxvt
 
+! State:            'bg',     'fg',     'bgalt',  'hlbg',   'hlfg'
+rofi.color-normal:  #285577,  #ffffff,  #2a5779,  #2370ef,  #ffffff
+!                   'background', 'border'
+rofi.color-window:  #285577,      #bbbbbb
