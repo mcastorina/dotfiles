@@ -71,25 +71,25 @@
     XF86TouchpadToggle
 
 # cmus controls
-"cmus-remote --next"
+"mpc next"
     Mod4 + j
 
-"cmus-remote --prev"
+"mpc prev"
     Mod4 + k
 
-"cmus-remote --pause"
+"mpc toggle"
     Mod4 + p
 
-"cmus-remote --volume +10%"
+"mpc volume +5"
     Mod4 + 0
 
-"cmus-remote --volume -10%"
+"mpc volume -5"
     Mod4 + 9
 
-"cmus-remote --seek +5"
+"mpc seek +5%"
     Mod4 + l
 
-"cmus-remote --seek -5"
+"mpc seek -5%"
     Mod4 + h
 
 ##################################
