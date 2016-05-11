@@ -17,7 +17,7 @@ light_gray  = '#b0b0b0'
 dark_gray   = '#555555'
 
 def initialize():
-    printf('{ "version": 1 } [')
+    printf('{ "version": 1, "click_events": true } [')
 def output_item(data, color, width=0):
     printf(jdumps({
                "full_text": data,
@@ -46,11 +46,11 @@ def internet(link=''):
 
     if 'Link detected: no' in run_cmd("ethtool " + link):
         return output_item('Not connected', red)
-    addr = run_cmd("ip route show | grep "+link+" | grep -o 'src .*$'")
+    addr = run_cmd("ip route show | grep %s | grep -o 'src .*$'" % (link))
     addr = addr[4:addr.find(' ', 5)]
 
     if (link[0] == 'w'):
-        ssid = run_cmd("iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'")
+        ssid = run_cmd("iw %s link | grep 'SSID' | sed 's/[ \t]*SSID: //g'" % (link))
         output_item(ssid + ' ', green)
         printf(',')
         output_item('('+addr+') ', light_gray)
@@ -63,7 +63,7 @@ def internet(link=''):
 def volume():
     vol = run_cmd("pulseaudio-ctl full-status")
     num = vol.split()[0]+'%'
-    output_item('Volume: ', light_gray)
+    output_item('♪ ', light_gray)
     printf(',')
     if ('yes' in vol):
         return output_item(num, red)
@@ -86,10 +86,26 @@ def battery():
 def music():
     try:
         data = run_cmd("cat $NOW_PLAYING")
-        return cmus(data) or pianobar(data)
+        return mpd() or cmus(data) or pianobar(data)
     except:
         output_item('Error', red)
         return True
+def mpd():
+    data = run_cmd("mpc status").split('\n')
+    status = ' '.join(data)
+    if 'Connection refused' in status: status = ''
+    elif 'paused' in status:    status = dark_gray
+    elif 'playing' in status:   status = white
+    else:                       status = ''
+    if len(data) > 0 and len(status) > 0:
+        current = data[0]
+        perc = data[1][data[1].index("(")+1:data[1].index(")")].zfill(3)
+
+        output_item(data[0], status)
+        printf(',')
+        output_item(' [%s]' % perc, light_gray if status == white else dark_gray)
+        return True
+    return False
 def cmus(data):
     status = run_cmd("cmus-remote -Q | grep status")
     if 'not running' in status: status = ''
