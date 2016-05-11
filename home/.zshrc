@@ -36,7 +36,7 @@ unsetopt AUTO_CD
 export EDITOR='vim'
 export PATH="/home/miccah/bin:$PATH"
 
-export school=~/documents/school/ut/spring-2016
+export school=~/doc/school/ut/spring-2016
 
 # binds
 bindkey -v
@@ -86,4 +86,14 @@ wget () {
     else
         /usr/bin/wget $@
     fi
+}
+
+# mkdir && cd
+new () {
+    /usr/bin/mkdir "$@" && cd "${@: -1}"
+}
+
+# grep shortcut
+search () {
+    grep --line-number --ignore-case --recursive $@
 }
