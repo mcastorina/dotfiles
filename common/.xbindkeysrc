@@ -70,26 +70,30 @@
 "touchpad-toggle.sh"
     XF86TouchpadToggle
 
-# cmus controls
-"mpc next"
+# Print screen
+"scrot --focused"
+    Mod4 + Print
+
+# mpd controls
+"mpc next || mpd"
     Mod4 + j
 
-"mpc prev"
+"mpc prev || mpd"
     Mod4 + k
 
-"mpc toggle"
+"mpc toggle || mpd"
     Mod4 + p
 
-"mpc volume +5"
+"mpc volume +5 || mpd"
     Mod4 + 0
 
-"mpc volume -5"
+"mpc volume -5 || mpd"
     Mod4 + 9
 
-"mpc seek +5%"
+"mpc seek +5% || mpd"
     Mod4 + l
 
-"mpc seek -5%"
+"mpc seek -5% || mpd"
     Mod4 + h
 
 ##################################
