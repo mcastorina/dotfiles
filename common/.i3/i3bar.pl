@@ -8,12 +8,12 @@ my $interval = +$ARGV[0] || 1;
 # Don't buffer output
 $| = 1;
 
-# array of functions to output
+# array of functions to output (left to right)
 my @order = (
     \&print_music,
     \&print_link,
-    \&print_volume,
     \&print_time,
+    \&print_volume,
     \&print_battery
 );
 
@@ -76,21 +76,39 @@ sub print_music {
         return 1;
     }
 }
+my $mpd_ofs = 0;
 sub mpd {
     my $status = `mpc status`;
     my @data = split('\n', $status);
 
-    if (index($status, "Connection refused") != -1) {$status = "";}
-    elsif (index($status, "paused") != -1)          {$status = $dark_gray;}
-    elsif (index($status, "playing") != -1)         {$status = $white;}
-    else                                            {$status = "";}
+    if ($status =~ "Connection refused") {$status = "";}
+    elsif ($status =~ "paused")          {$status = $dark_gray;}
+    elsif ($status =~ "playing")         {$status = $white;}
+    else                                 {$status = "";}
 
     if (scalar(@data) > 0 && length($status) > 0) {
         my $current = @data[0];
+        if (length($current) > 50) {
+            $current = "$current    ";
+            $current = substr($current, $mpd_ofs, 50);
+            # FIXME: scroll around
+            if (length($current) != 50) {
+                my $amt = 50 - length($current);
+                if ($amt < 0) {$amt = 0;}
+                $current = $current . substr(@data[0], 0, $amt);
+            }
+            if ($status eq $white) {
+                # rotate only if playing
+                $mpd_ofs = ($mpd_ofs + 1) % (length(@data[0]) + 4);
+            }
+        }
+        else {
+            $mpd_ofs = 0;
+        }
         @data[1] =~ /\((.*)\)/;
         my $perc = $1;
 
-        print_item("mpd", @data[0], $status);
+        print_item("mpd", $current, $status);
         print ",";
         if ($status eq $white) {$status = $light_gray;}
         else {$status = $dark_gray;}
@@ -134,7 +152,7 @@ sub print_link {
         }
         return 1;
     }
-    if (index(`ethtool $link`, "Link detected: no") != -1) {
+    if (`ethtool $link` =~ "Link detected: no") {
         return print_item("link", "Not connected", $red);
     }
     my $addr = `ip route show | grep $link | grep -o 'src .*\$'`;
@@ -144,7 +162,8 @@ sub print_link {
         my $ssid;
         if ($link_type) {
             $ssid = `iw $link link | grep 'SSID' | sed 's/[ \t]*SSID: //g'`;
-        } else {
+        }
+        else {
             $ssid = `curl ipv4.icanhazip.com`;
         }
         chop($ssid);
@@ -162,13 +181,15 @@ sub print_link {
 }
 sub print_volume {
     my $vol = `pulseaudio-ctl full-status`;
-    my $num = (split(' ', $vol))[0] . "%";
-    print_item("vol", "♪ ", $light_gray);
-    print ",";
-    if (index($vol, "yes") != -1) {
-        return print_item("vol", $num, $red);
+    my $num = (split(' ', $vol))[0];
+    if ($vol =~ "yes") {
+        print_item("vol", $num, $red);
     }
-    return print_item("vol", $num, $white);
+    else {
+        print_item("vol", $num, $white);
+    }
+    print ",";
+    print_item("vol", " ♪", $light_gray);
 }
 sub print_time {
     my $time = strftime("%H:%M:%S", localtime(time()));
@@ -179,9 +200,9 @@ sub print_time {
 }
 sub print_battery {
     my $data = `acpi`;
-    $data =~ /, (.*)%,/;
+    $data =~ /, (.*)%/;
     my $num = $1;
-    if (index($data, "Discharging") != -1) {
+    if ($data =~ "Discharging") {
         my $color = $white;
         if ($num <= 20) {
             $color = $red;
@@ -220,6 +241,13 @@ while (<STDIN>) {
             kill("ALRM", "$$");
         }
     }
+    # elsif (/"name":"time"/ and /"button":([0-9])/) {
+    #     my $button = $1;
+    #     if ($button == 1) {
+    #         my $date = strftime("%A, %B %d, %Y", localtime(time()));
+    #         `notify-send "$date"`;
+    #     }
+    # }
     elsif (/"name":"link"/ and /"button":([0-9])/) {
         my $button = $1;
         if ($button == 1) {
@@ -237,6 +265,10 @@ while (<STDIN>) {
         my $button = $1;
         if ($button == 1) {
             `mpc toggle`;
+            kill("ALRM", "$$");
+        }
+        elsif ($button == 3) {
+            `mpc next`;
             kill("ALRM", "$$");
         }
         elsif ($button == 4) {
