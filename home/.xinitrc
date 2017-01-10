@@ -35,9 +35,6 @@ fi
 # wallpaper
 $HOME/.fehbg &
 
-# audio
-#(sleep 5 && pulseadio --start) &
-
 # clipboard
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
@@ -50,6 +47,7 @@ compton --daemon --fading --fade-in-step=0.06 --fade-out-step=0.06 &
 
 # save now playing variable for i3 status
 export NOW_PLAYING=$HOME/.config/.now_playing
+export BANNER=$HOME/.banner
 
 # save dbus session variable
 touch $HOME/.dbus/Xdbus
