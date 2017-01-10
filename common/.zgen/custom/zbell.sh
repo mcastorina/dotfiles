@@ -27,7 +27,7 @@ autoload -Uz add-zsh-hook || return
 (( ${+zbell_ignore} )) || zbell_ignore=($EDITOR $PAGER ssh su \
     youtube-viewer mpv mupdf zathura evince libreoffice wyrd feh man \
     ranger python octave octave-cli matlab stopwatch watch gdb htop \
-    pianobar cmus ncmpcpp)
+    pianobar cmus ncmpcpp tmux)
 
 # initialize it because otherwise we compare a date and an empty string
 # the first time we see the prompt. it's fine to have lastcmd empty on the
