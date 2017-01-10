@@ -43,6 +43,8 @@ URxvt.url-select.launcher:      firefox
 
 URxvt.keysym.M-u:               perl:url-select:select_next
 URxvt.keysym.M-Escape:          perl:keyboard-select:activate
+URxvt.keysym.Control-Shift-J:   string:\033[1;5C
+URxvt.keysym.Control-Shift-K:   string:\033[1;5D
 
 
 URxvt.resize-font.smaller:      C-minus
