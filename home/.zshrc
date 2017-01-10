@@ -1,5 +1,8 @@
 # Disable oh-my-zsh update prompt
 export DISABLE_AUTO_UPDATE="true"
+if [ ! -f ~/.zgen/zgen.zsh ]; then
+    git clone https://github.com/tarjoilija/zgen.git ~/.zgen
+fi
 source ~/.zgen/zgen.zsh
 
 if ! zgen saved; then
@@ -39,7 +42,7 @@ unsetopt AUTO_CD
 export EDITOR='vim'
 export PATH="/home/miccah/bin:$PATH"
 
-export school=~/doc/school/ut/fall-2016
+export school=~/doc/school/ut/spring-2017
 
 # binds
 bindkey -v
@@ -59,12 +62,14 @@ eval `dircolors -b ~/.dircolors`
 alias mv="mv -i"
 alias cp="cp -i"
 alias pacman="pacman --color=auto"
+alias aura="aura --color=auto"
 alias feh="feh --scale-down"
-alias youtube-viewer="youtube-viewer --video-player=mpv --resolution=720p"
+alias youtube-viewer="youtube-viewer --video-player=mpv --append-arg='--input-ipc-server /tmp/mpvsocket' --resolution=720p"
 alias matlab="matlab -nodesktop -nosplash"
 alias octave="octave-cli"
 alias ipython="ipython --no-confirm-exit"
 alias ipython2="ipython2 --no-confirm-exit"
+alias mpv="mpv --input-ipc-server /tmp/mpvsocket"
 
 alias open="xdg-open"
 alias noblank="xset -dpms; xset s noblank; xset s off"
@@ -73,6 +78,7 @@ alias ssid="iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'"
 alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
 alias since="ps -o etime= -p"
 alias weather="curl http://wttr.in 2> /dev/null"
+alias search="grep --line-number --ignore-case --recursive"
 
 # functions
 fancy-ctrl-z () {
@@ -100,12 +106,12 @@ new () {
     /usr/bin/mkdir "$@" && cd "${@: -1}"
 }
 
-# grep shortcut
-search () {
-    grep --line-number --ignore-case --recursive $@
-}
-
 # convert pdf image to png
 pdf2png () {
     convert -density 100 -trim $1 -quality 100 -sharpen 0x0.5 $2
+}
+
+# fork and redirect zathura output
+zathura () {
+    /usr/bin/zathura --fork $@ &> /dev/null
 }
