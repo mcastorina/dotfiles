@@ -615,3 +615,6 @@ def_key "9"
 
 def_key "D"
     delete_playlist_items
+
+def_key "L"
+    show_lyrics
