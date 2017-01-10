@@ -10,6 +10,7 @@ $| = 1;
 
 # array of functions to output (left to right)
 my @order = (
+    \&print_banner,
     \&print_music,
     \&print_link,
     \&print_time,
@@ -26,7 +27,9 @@ my $light_gray  = "#b0b0b0";
 my $dark_gray   = "#555555";
 
 # global vars
-my $link_type = 1;
+my $link_type = 0;
+my $date_type = 0;
+my $time_type = 0;
 
 sub print_item {
     my $color = $_[2] || $white;
@@ -65,11 +68,21 @@ sub print_items {
 }
 
 
+sub print_banner {
+    try {
+        my $data = `cat \$BANNER | head -1`;
+        chop($data);
+        return print_item("banner", $data, $white);
+    }
+    catch {
+        return 1;
+    }
+}
 sub print_music {
     try {
         my $data = `cat \$NOW_PLAYING`;
         chop($data);
-        return pianobar($data) || mpd();
+        return pianobar($data) || spotify() || mpd();
     }
     catch {
         print_item("music_err", "Error", $red);
@@ -91,7 +104,6 @@ sub mpd {
         if (length($current) > 50) {
             $current = "$current    ";
             $current = substr($current, $mpd_ofs, 50);
-            # FIXME: scroll around
             if (length($current) != 50) {
                 my $amt = 50 - length($current);
                 if ($amt < 0) {$amt = 0;}
@@ -119,12 +131,53 @@ sub mpd {
 }
 sub pianobar {
     my $data = $_[0];
+    my $current = $data;
     my $status = `ps -e | grep pianobar`;
-    if (length($status) > 1) {
-        print_item("pianobar", $data, $white);
-        return 1;
+    if (length($status) <= 1) {
+        return 0;
     }
-    return 0;
+
+    if (length($current) > 50) {
+        $current = "$current    ";
+        $current = substr($current, $mpd_ofs, 50);
+        if (length($current) != 50) {
+            my $amt = 50 - length($current);
+            if ($amt < 0) {$amt = 0;}
+            $current = $current . substr($data, 0, $amt);
+        }
+        $mpd_ofs = ($mpd_ofs + 1) % (length($data) + 4);
+    }
+    else {
+        $mpd_ofs = 0;
+    }
+    return print_item("pianobar", $current, $white);
+}
+sub spotify {
+    my $status = `ps -e | grep spotify`;
+    if (length($status) <= 1) {
+        return 0;
+    }
+    my $color = $white;
+    my $data = `spotify-now -i "%artist - %title" -p "paused"`; chop($data);
+    if ($data eq "paused") {
+        $color = $dark_gray;
+    }
+    my $data = `spotify-now -i "%artist - %title"`; chop($data);
+    my $current = $data;
+    if (length($current) > 50) {
+        $current = "$current    ";
+        $current = substr($current, $mpd_ofs, 50);
+        if (length($current) != 50) {
+            my $amt = 50 - length($current);
+            if ($amt < 0) {$amt = 0;}
+            $current = $current . substr($data, 0, $amt);
+        }
+        $mpd_ofs = ($mpd_ofs + 1) % (length($data) + 4);
+    }
+    else {
+        $mpd_ofs = 0;
+    }
+    return print_item("spotify", $current, $color);
 }
 sub print_link {
     my $link = $_[0];
@@ -155,17 +208,18 @@ sub print_link {
     if (`ethtool $link` =~ "Link detected: no") {
         return print_item("link", "Not connected", $red);
     }
-    my $addr = `ip route show | grep $link | grep -o 'src .*\$'`;
-    $addr = (split(' ', $addr))[1];
+    my $addr;
+    if ($link_type) {
+        $addr = `curl ipv4.icanhazip.com`;
+        chop($addr);
+    }
+    else {
+        $addr = `ip route show | grep $link | grep -o 'src .*\$'`;
+        $addr = (split(' ', $addr))[1];
+    }
 
     if (substr($link, 0, 1) eq "w") {
-        my $ssid;
-        if ($link_type) {
-            $ssid = `iw $link link | grep 'SSID' | sed 's/[ \t]*SSID: //g'`;
-        }
-        else {
-            $ssid = `curl ipv4.icanhazip.com`;
-        }
+        my $ssid = `iw $link link | grep 'SSID' | sed 's/[ \t]*SSID: //g'`;
         chop($ssid);
         print_item("link", "$ssid ", $green);
         print ",";
@@ -192,8 +246,12 @@ sub print_volume {
     print_item("vol", " ♪", $light_gray);
 }
 sub print_time {
-    my $time = strftime("%H:%M:%S", localtime(time()));
-    my $date = strftime("%A, %B %d", localtime(time()));
+    my $df;
+    my $tf;
+    if ($time_type) { $tf = "%I:%M:%S %p"; } else { $tf = "%H:%M:%S"; }
+    my $time = strftime($tf, localtime(time()));
+    if ($date_type) { $df = "%m/%d/%Y"; } else { $df = "%A, %B %d"; }
+    my $date = strftime($df, localtime(time()));
     print_item("date", $date);
     print_sep();
     print_item("time", $time);
@@ -226,58 +284,66 @@ print_items();
 alarm($interval - (time % $interval));
 
 while (<STDIN>) {
-    if (/"name":"vol"/ and /"button":([0-9])/) {
-        my $button = $1;
-        if ($button == 1) {
-            `pulseaudio-ctl mute`;
-            kill("ALRM", "$$");
-        }
-        elsif ($button == 4) {
-            `pulseaudio-ctl up 2`;
-            kill("ALRM", "$$");
-        }
-        elsif ($button == 5) {
-            `pulseaudio-ctl down 2`;
-            kill("ALRM", "$$");
-        }
+    if ($1 == 3) {
+        # toggle visibility
     }
-    # elsif (/"name":"time"/ and /"button":([0-9])/) {
-    #     my $button = $1;
-    #     if ($button == 1) {
-    #         my $date = strftime("%A, %B %d, %Y", localtime(time()));
-    #         `notify-send "$date"`;
-    #     }
-    # }
-    elsif (/"name":"link"/ and /"button":([0-9])/) {
-        my $button = $1;
-        if ($button == 1) {
-            $link_type = not $link_type;
-            kill("ALRM", "$$");
+    else {
+        if (/"name":"vol"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `pulseaudio-ctl mute`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 4) {
+                `pulseaudio-ctl up 2`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 5) {
+                `pulseaudio-ctl down 2`;
+                kill("ALRM", "$$");
+            }
         }
-    }
-    elsif (/"name":"battery"/ and /"button":([0-9])/) {
-        my $button = $1;
-        if ($button == 1) {
-            `notify-send "\$(acpi)"`;
+        elsif (/"name":"date"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                $date_type = not $date_type;
+                kill("ALRM", "$$");
+            }
         }
-    }
-    elsif (/"name":"mpd"/ and /"button":([0-9])/) {
-        my $button = $1;
-        if ($button == 1) {
-            `mpc toggle`;
-            kill("ALRM", "$$");
+        elsif (/"name":"time"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                $time_type = not $time_type;
+                kill("ALRM", "$$");
+            }
         }
-        elsif ($button == 3) {
-            `mpc next`;
-            kill("ALRM", "$$");
+        elsif (/"name":"link"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                $link_type = not $link_type;
+                kill("ALRM", "$$");
+            }
         }
-        elsif ($button == 4) {
-            `mpc seek +1%`;
-            kill("ALRM", "$$");
+        elsif (/"name":"battery"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `notify-send "\$(acpi)"`;
+            }
         }
-        elsif ($button == 5) {
-            `mpc seek -1%`;
-            kill("ALRM", "$$");
+        elsif (/"name":"mpd"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `mpc toggle`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 4) {
+                `mpc seek +1%`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 5) {
+                `mpc seek -1%`;
+                kill("ALRM", "$$");
+            }
         }
     }
 }
