@@ -14,6 +14,9 @@ Plug 'scrooloose/syntastic'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-speeddating'
+Plug 'mattn/calendar-vim'
 
 call plug#end()
 filetype plugin indent on
@@ -42,7 +45,9 @@ set hlsearch
 
 set ff=unix
 set foldmethod=syntax
-set nowrap
+"set nowrap
+
+let maplocalleader="\\"
 
 " Escape key also mapped as pushing j and k
 inoremap jk <Esc>
@@ -52,6 +57,9 @@ autocmd InsertLeave * set timeoutlen=1000
 
 " This unsets the "last search pattern" register
 nnoremap ,. :noh<CR>:<Backspace>
+
+" Semicolon in normal mode is the same as colon
+nnoremap ; :
 
 " Function binds
 nnoremap <F4> :GundoToggle<CR>
@@ -81,8 +89,9 @@ nnoremap <C-H> <C-W>W
 " Tab moving
 nnoremap <C-J> :tabnext<CR>
 nnoremap <C-K> :tabprev<CR>
-nnoremap <PageDown> :tabm +<CR>
-nnoremap <PageUp>   :tabm -<CR>
+" Corresponds to ~/.Xresources mapping for Ctrl-Shift-J/K
+nnoremap <ESC>[1;5C :tabmove +<CR>
+nnoremap <ESC>[1;5D :tabmove -<CR>
 
 " Toggle folds
 map <Space> za
@@ -93,6 +102,13 @@ nnoremap <C-P> :call StripTrailingWhitespaces()<CR>
 
 " Underline
 nnoremap + Yp<C-V>$r=
+
+" Columnize
+"   a
+"   b       a   b
+"   c       c   d
+"   d
+vnoremap <C-O> !awk '{ORS = (NR\%2 ? FS : RS)} 1' \| column -t<CR>
 
 set showcmd
 
@@ -128,7 +144,7 @@ endfunction
 
 " Compile LaTex files and remove extra files
 if !exists("g:latex_build") || !exists("g:latex_clean")
-    let g:latex_build = "/usr/bin/latexmk -pdf -cd"
+    let g:latex_build = "/usr/bin/latexmk -interaction=nonstopmode -pdf -cd"
     let g:latex_clean = "/usr/bin/latexmk -cd -c"
 endif
 function! LatexBuild()
