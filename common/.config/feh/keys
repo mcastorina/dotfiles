@@ -12,7 +12,7 @@ jump_back               u Prior
 toggle_filenames        o
 zoom_in                 plus
 zoom_out                minus
-zoom_fit                equal
+zoom_fit                s equal
 orient_3                H less
 orient_1                L greater
 
