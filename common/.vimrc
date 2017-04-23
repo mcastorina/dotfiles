@@ -16,6 +16,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-surround'
 Plug 'mattn/calendar-vim'
 
 call plug#end()
@@ -93,6 +95,9 @@ nnoremap <C-K> :tabprev<CR>
 nnoremap <ESC>[1;5C :tabmove +<CR>
 nnoremap <ESC>[1;5D :tabmove -<CR>
 
+" Highlight word (without going to the next one)
+nnoremap <C-N> *N
+
 " Toggle folds
 map <Space> za
 
@@ -149,6 +154,6 @@ if !exists("g:latex_build") || !exists("g:latex_clean")
 endif
 function! LatexBuild()
     let name = " " . shellescape(bufname("%")) . " "
-    execute "!" . g:latex_build . name . "&&" . g:latex_clean . name
+    execute "!" . g:latex_build . name . ";" . g:latex_clean . name
 endfunction
 command! -nargs=0 Latex call LatexBuild()
