@@ -21,6 +21,10 @@ inoremap <C-k> <Esc>gT
 inoremap <C-S-j> <Esc>:tabm +1<CR>
 inoremap <C-S-k> <Esc>:tabm -1<CR>
 
+" Group moving
+noremap H <Esc>:tabgroups switch -1<CR>
+noremap L <Esc>:tabgroups switch +1<CR>
+
 " Move cursor in insert (or command) mode
 inoremap <C-h> <Left>
 cnoremap <C-h> <Left>
