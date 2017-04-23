@@ -182,8 +182,9 @@ sub spotify {
 sub print_link {
     my $link = $_[0];
     if (scalar(@_) == 0) {
-        my $eth = `ip link show | grep -o 'enp.*:'`;
-        my $wlan = `ip link show | grep -o 'wlp.*:'`;
+        # TODO: multiple NICs
+        my $eth = `ip link show | grep -o 'enp.*:' | head -1`;
+        my $wlan = `ip link show | grep -o 'wlp.*:' | head -1`;
 
         chop($eth);
         chop($eth);
@@ -227,7 +228,24 @@ sub print_link {
         print ",";
         my $perc = `awk 'NR==3 {print substr(\$3,0,length(\$3)-1) \"%\"}''' /proc/net/wireless`;
         chop($perc);
-        return print_item("link", $perc, $white);
+        chop($perc);
+        my $symbol = "▮";
+        if ($perc >= 10) {
+            $symbol = "$symbol▮";
+            if ($perc >= 35) {
+                $symbol = "$symbol▮";
+                if ($perc >= 55) {
+                    $symbol = "$symbol▮";
+                    if ($perc >= 70) {
+                        $symbol = "$symbol▮";
+                    }
+                }
+            }
+        }
+        while (length($symbol) < 15) {
+            $symbol = "$symbol▯";
+        }
+        return print_item("link", $symbol, $white);
     }
     print_item("link", "Ethernet ", $green);
     print ",";
