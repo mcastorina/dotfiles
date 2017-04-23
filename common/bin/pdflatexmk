@@ -2,4 +2,4 @@
 
 # Create a pdf file from a LaTex file using latexmk
 # The -c option will delete all nonessential files that are generated
-/usr/bin/latexmk -interaction=nonstopmode -pdf -cd $@ && /usr/bin/latexmk -c -cd $@
+/usr/bin/latexmk -interaction=nonstopmode -pdf -cd $@ ; /usr/bin/latexmk -c -cd $@
