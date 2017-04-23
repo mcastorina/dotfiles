@@ -1,7 +1,12 @@
 # Disable oh-my-zsh update prompt
 export DISABLE_AUTO_UPDATE="true"
 if [ ! -f ~/.zgen/zgen.zsh ]; then
-    git clone https://github.com/tarjoilija/zgen.git ~/.zgen
+    # Install zgen
+    mkdir -p ~/.zgen && cd ~/.zgen
+    git init
+    git remote add origin https://github.com/tarjoilija/zgen.git
+    git fetch
+    git checkout --track origin/master
 fi
 source ~/.zgen/zgen.zsh
 
@@ -38,9 +43,12 @@ ZSH_HIGHLIGHT_STYLES[globbing]='fg=196'
 # Disable auto cd
 unsetopt AUTO_CD
 
+# Set history config
+export HISTORY_IGNORE="(history|exit)"
+
 # exports
 export EDITOR='vim'
-export PATH="/home/miccah/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 
 export school=~/doc/school/ut/spring-2017
 
@@ -79,6 +87,10 @@ alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
 alias since="ps -o etime= -p"
 alias weather="curl http://wttr.in 2> /dev/null"
 alias search="grep --line-number --ignore-case --recursive"
+alias yank="xclip -selection primary"
+alias put="xclip -o -selection primary"
+alias wifi-on="sudo systemctl start netctl-auto@wlp3s0.service"
+alias wifi-off="sudo systemctl stop netctl-auto@wlp3s0.service"
 
 # functions
 fancy-ctrl-z () {
