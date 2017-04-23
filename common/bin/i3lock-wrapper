@@ -5,7 +5,7 @@ file1=$(mktemp --tmpdir i3lock-wrapper-XXXXXXXXXX.png)
 file2=$(mktemp --tmpdir i3lock-wrapper-XXXXXXXXXX.png)
 
 scrot -d0 "$file1"
-/home/miccah/bin/image-scripts/frosted "$file1" "$file2"
+/home/miccah/bin/image-scripts/pixelize -s 24 "$file1" "$file2"
 rm "$file1"
 
 cmd=()
