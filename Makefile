@@ -3,10 +3,11 @@
 # Configuration
 STOW        ?= /usr/bin/stow
 STOW_TARGET ?= $$HOME
-STOW_DIR    ?= common home
+STOW_DIR    ?= common
+PROFILES     = $(shell find * -maxdepth 0 -type d)
 
 all: $(STOW_DIR)
-$(STOW_DIR): run
+$(PROFILES): run
 	$(STOW) --target=$(STOW_TARGET) $@
 
 # If stow encounters a conflict that's a regular file, overwrites stow's
