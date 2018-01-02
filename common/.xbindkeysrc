@@ -39,7 +39,7 @@
 
 # Decrease screen brightness
 # Stops before making brightness 0
-"[ $(xbacklight -get | python -c 'print(int(float(input())))') -gt '1' ] && xbacklight -dec 1 -steps 1"
+"(xbacklight -get | python -c 'import sys; sys.exit(float(input()) <= 1.0)') && xbacklight -dec 1 -steps 1"
     XF86MonBrightnessDown
 
 # Increase screen brightness
