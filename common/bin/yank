@@ -1,0 +1,5 @@
+#!/bin/bash
+# TODO: intercept stdin / argument to check mime type
+# to be used with -target flag to xclip
+# file --brief --mime-type $file (- for stdin)
+xclip -in -selection clipboard $@

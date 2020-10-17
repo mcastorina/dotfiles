@@ -1,0 +1,4 @@
+#!/bin/bash
+# TODO: intercept output to check the mime-type
+# and do not display if it is not text
+xclip -out -selection clipboard
