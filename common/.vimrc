@@ -114,6 +114,7 @@ nnoremap + Yp<C-V>$r=
 "   c       c   d
 "   d
 vnoremap <C-O> !awk '{ORS = (NR\%2 ? FS : RS)} 1' \| column -t<CR>
+vnoremap <Enter> :<C-u>call SendTerm()<CR>:<BS>
 
 set showcmd
 
@@ -157,3 +158,29 @@ function! LatexBuild()
     execute "!" . g:latex_build . name . ";" . g:latex_clean . name
 endfunction
 command! -nargs=0 Latex call LatexBuild()
+
+function! s:get_visual_selection()
+    " Why is this not a built-in Vim script function?!
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+
+function! SendTerm()
+    let data = s:get_visual_selection() . "\<CR>"
+    " get the buffer window number for bash
+    let bnr = bufwinnr('!bash')
+    if bnr > 0
+        call term_sendkeys(bnr, data)
+    else
+        " spawn the bash terminal if not found
+        vertical terminal bash
+        call term_sendkeys(bufwinnr('!bash'), data)
+    endif
+endfunction
