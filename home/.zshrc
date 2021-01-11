@@ -17,8 +17,7 @@ if ! zgen saved; then
 
     # plugins
     zgen oh-my-zsh plugins/git
-    zgen oh-my-zsh plugins/sudo
-    zgen oh-my-zsh plugins/last-working-dir
+    # zgen oh-my-zsh plugins/last-working-dir
     zgen load zsh-users/zsh-syntax-highlighting
 
     # completions
@@ -26,31 +25,33 @@ if ! zgen saved; then
     zgen load tarruda/zsh-autosuggestions
 
     # theme
-    zgen oh-my-zsh themes/minimal
+    zgen load ~/.zgen/custom/miccah.zsh-theme
 
     # save all to init script
     zgen save
 fi
 
 # Load custom scripts
-source ~/.zgen/custom/zbell.sh
+# source ~/.zgen/custom/zbell.sh
 
 # configure zsh-syntax-highlighting
 ZSH_HIGHLIGHT_STYLES[path]='fg=45,underline'
 ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=45'
 ZSH_HIGHLIGHT_STYLES[globbing]='fg=196'
 
-# Disable auto cd
-unsetopt AUTO_CD
+# Set / unset options
+setopt extendedglob notify
+unsetopt autocd beep
 
 # Set history config
-export HISTORY_IGNORE="(history|exit)"
+HISTFILE=~/.zsh_history
+HISTSIZE=10000000
+SAVEHIST=10000000
+HISTORY_IGNORE="(history|exit)"
 
 # exports
 export EDITOR='vim'
 export PATH="$HOME/bin:$PATH"
-
-export school=~/doc/school/ut/spring-2017
 
 # binds
 bindkey -v
@@ -69,15 +70,10 @@ eval `dircolors -b ~/.dircolors`
 # aliases
 alias mv="mv -i"
 alias cp="cp -i"
-alias pacman="pacman --color=auto"
-alias aura="aura --color=auto"
 alias feh="feh --scale-down"
 alias youtube-viewer="youtube-viewer --video-player=mpv --append-arg='--input-ipc-server /tmp/mpvsocket' --resolution=720p"
-alias matlab="matlab -nodesktop -nosplash"
-alias octave="octave-cli"
-alias ipython="ipython --no-confirm-exit"
-alias ipython2="ipython2 --no-confirm-exit"
 alias mpv="mpv --input-ipc-server /tmp/mpvsocket"
+alias yay="yay --color=always"
 
 alias open="xdg-open"
 alias noblank="xset -dpms; xset s noblank; xset s off"
@@ -85,10 +81,8 @@ alias blank="xset +dpms; xset s blank; xset s on"
 alias ssid="iw wlp3s0 link | grep 'SSID' | sed 's/[ \t]*SSID: //g'"
 alias battery="acpi | awk -F\"[,,]\" '{print \$2}' | cut -c 2-"
 alias since="ps -o etime= -p"
-alias weather="curl http://wttr.in 2> /dev/null"
-alias search="grep --line-number --ignore-case --recursive"
-alias yank="xclip -selection primary"
-alias put="xclip -o -selection primary"
+alias weather="curl http://wttr.in 2>/dev/null"
+alias search="rg --line-number --ignore-case"
 alias wifi-on="sudo systemctl start netctl-auto@wlp3s0.service"
 alias wifi-off="sudo systemctl stop netctl-auto@wlp3s0.service"
 
@@ -107,7 +101,7 @@ bindkey '^Z' fancy-ctrl-z
 # if no options are given, then wget clipboard
 wget () {
     if [[ $# -eq 0 ]]; then
-        /usr/bin/wget $(xsel -ob)
+        /usr/bin/wget -- $(xsel -ob)
     else
         /usr/bin/wget $@
     fi
@@ -117,10 +111,9 @@ wget () {
 new () {
     /usr/bin/mkdir "$@" && cd "${@: -1}"
 }
-
-# convert pdf image to png
-pdf2png () {
-    convert -density 100 -trim $1 -quality 100 -sharpen 0x0.5 $2
+# mkdir && mv
+store () {
+    /usr/bin/mkdir -p "${@: -1}" && mv "${@: 1 : -1}" "${@: -1}"
 }
 
 # fork and redirect zathura output
