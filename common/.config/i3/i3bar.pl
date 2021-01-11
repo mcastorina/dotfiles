@@ -10,12 +10,12 @@ $| = 1;
 
 # array of functions to output (left to right)
 my @order = (
-    \&print_banner,
+    \&print_storror,
+    \&print_updates,
     \&print_music,
     \&print_link,
     \&print_time,
     \&print_volume,
-    \&print_battery
 );
 
 # colors
@@ -27,6 +27,7 @@ my $light_gray  = "#b0b0b0";
 my $dark_gray   = "#555555";
 
 # global vars
+my $public_ip = "unknown";
 my $link_type = 0;
 my $date_type = 0;
 my $time_type = 0;
@@ -68,9 +69,42 @@ sub print_items {
 }
 
 
+sub print_storror {
+    try {
+        my $data = `cat \$(xdg-user-dir CACHE)/available-tens`;
+        if ($? != 0) {
+            return 0;
+        }
+        chop($data);
+        if (length($data) > 0) {
+            return print_item("storror", "$data", $red);
+        }
+    }
+    catch {}
+    return 0;
+}
+sub print_updates {
+    try {
+        my $data = `cat \$(xdg-user-dir CACHE)/available-updates | wc -l`;
+        if ($? != 0) {
+            return 0;
+        }
+        chop($data);
+        if ($data == "1") {
+            return print_item("updates", "$data update available", $blue);
+        } elsif ($data != "0") {
+            return print_item("updates", "$data updates available", $blue);
+        }
+    }
+    catch {}
+    return 0;
+}
 sub print_banner {
     try {
         my $data = `cat \$BANNER | head -1`;
+        if ($? != 0) {
+            return 0;
+        }
         chop($data);
         return print_item("banner", $data, $white);
     }
@@ -80,7 +114,10 @@ sub print_banner {
 }
 sub print_music {
     try {
-        my $data = `cat \$NOW_PLAYING`;
+        my $data = `cat \$(xdg-user-dir CACHE)/now-playing`;
+        if ($? != 0) {
+            return 0;
+        }
         chop($data);
         return pianobar($data) || spotify() || mpd();
     }
@@ -211,8 +248,8 @@ sub print_link {
     }
     my $addr;
     if ($link_type) {
-        $addr = `curl ipv4.icanhazip.com`;
-        chop($addr);
+        # TODO: update cache periodically
+        $addr = $public_ip;
     }
     else {
         $addr = `ip route show | grep $link | grep -o 'src .*\$'`;
@@ -266,7 +303,10 @@ sub print_volume {
 sub print_time {
     my $df;
     my $tf;
-    if ($time_type) { $tf = "%I:%M:%S %p"; } else { $tf = "%H:%M:%S"; }
+    if ($time_type) {
+        $tf = "%I:%M %p";
+        if (time() % 2 == 0) { $tf = "%I %M %p"; }
+    } else { $tf = "%H:%M:%S"; }
     my $time = strftime($tf, localtime(time()));
     if ($date_type) { $df = "%m/%d/%Y"; } else { $df = "%A, %B %d"; }
     my $date = strftime($df, localtime(time()));
@@ -339,6 +379,10 @@ while (<STDIN>) {
             my $button = $1;
             if ($button == 1) {
                 $link_type = not $link_type;
+                if ($link_type) {
+                    $public_ip = `curl ipv4.icanhazip.com || echo unknown`;
+                    chop($public_ip);
+                }
                 kill("ALRM", "$$");
             }
         }
@@ -360,6 +404,35 @@ while (<STDIN>) {
             }
             elsif ($button == 5) {
                 `mpc seek -1%`;
+                kill("ALRM", "$$");
+            }
+        }
+        elsif (/"name":"updates"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `\$HOME/bin/check-updates`;
+                kill("ALRM", "$$");
+            }
+        }
+        elsif (/"name":"storror"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `firefox https://www.storror.com/store/product/storror-tens-parkour-shoe-black`;
+                kill("ALRM", "$$");
+            }
+        }
+        elsif (/"name":"pianobar"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `pianoctl p`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 2) {
+                `pianoctl q`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 3) {
+                `pianoctl n`;
                 kill("ALRM", "$$");
             }
         }
