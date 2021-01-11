@@ -9,28 +9,49 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'airblade/vim-gitgutter'
 Plug 'myusuf3/numbers.vim'
-Plug 'taglist.vim'
-Plug 'scrooloose/syntastic'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-surround'
-Plug 'mattn/calendar-vim'
+Plug 'tpope/vim-rails'
+Plug 'MarcWeber/vim-addon-mw-utils'
+Plug 'tomtom/tlib_vim'
+Plug 'garbas/vim-snipmate'
+Plug 'honza/vim-snippets'
+Plug 'fatih/vim-go'
 
 call plug#end()
 filetype plugin indent on
 
+" Function binds
+nnoremap <F3> :Lexplore<CR>
+nnoremap <F4> :GundoToggle<CR>
+nnoremap <F5> :TlistToggle<CR><C-W><C-H>
+nnoremap <F6> :NumbersToggle<CR>
+
+" nerd tree style file browser
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 15
+let g:netrw_sort_sequence = '[\/]$,*'
+" augroup ProjectDrawer
+"     autocmd!
+"     autocmd VimEnter * :Lexplore
+" augroup END
+
+
 syntax on
 set number
-autocmd vimEnter * NumbersOnOff
 autocmd VimEnter * set number
 set t_Co=256
 colorscheme lapis256
 
 set backspace=indent,eol,start
+set clipboard=unnamedplus
 
 set tabstop=4
 set shiftwidth=4
@@ -39,6 +60,10 @@ set expandtab
 set autoindent
 set smartindent
 set cindent
+
+" set line cursor
+set cursorline
+set cursorlineopt=line
 
 set incsearch
 "set ignorecase
@@ -63,21 +88,6 @@ nnoremap ,. :noh<CR>:<Backspace>
 " Semicolon in normal mode is the same as colon
 nnoremap ; :
 
-" Function binds
-nnoremap <F4> :GundoToggle<CR>
-nnoremap <F5> :TlistToggle<CR><C-W><C-H>
-nnoremap <F6> :NumbersToggle<CR>
-nnoremap <F7> :SyntasticToggleMode<CR>
-
-" Syntastic
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_c_check_header = 1
-let g:syntastic_c_no_default_include_dirs = 1
-let g:syntastic_c_auto_refresh_includes = 1
-
 " Gundo
 let g:gundo_width = 30
 let g:gundo_preview_height = 10
@@ -101,6 +111,9 @@ nnoremap <C-N> *N
 " Toggle folds
 map <Space> za
 
+" GOTO file will open in new tab
+map gf <C-W>gF
+
 " Format
 nnoremap <C-O> !!fmt<CR>
 nnoremap <C-P> :call StripTrailingWhitespaces()<CR>
@@ -114,7 +127,7 @@ nnoremap + Yp<C-V>$r=
 "   c       c   d
 "   d
 vnoremap <C-O> !awk '{ORS = (NR\%2 ? FS : RS)} 1' \| column -t<CR>
-vnoremap <Enter> :<C-u>call SendTerm()<CR>:<BS>
+vnoremap <Enter> :<C-u>call SendFunnel()<CR>:<BS>
 
 set showcmd
 
@@ -175,12 +188,17 @@ endfunction
 function! SendTerm()
     let data = s:get_visual_selection() . "\<CR>"
     " get the buffer window number for bash
-    let bnr = bufwinnr('!bash')
+    let bnr = buffer_number('!bash')
     if bnr > 0
         call term_sendkeys(bnr, data)
     else
         " spawn the bash terminal if not found
         vertical terminal bash
-        call term_sendkeys(bufwinnr('!bash'), data)
+        call term_sendkeys(buffer_number('!bash'), data)
     endif
+endfunction
+
+function! SendFunnel()
+    let data = s:get_visual_selection() . "\n"
+    call system("funnel", data)
 endfunction

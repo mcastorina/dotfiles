@@ -50,6 +50,7 @@ hi Ignore          ctermfg=none     ctermbg=none        cterm=none
 hi StatusLine      ctermfg=015      ctermbg=000         cterm=none
 hi WildMenu        ctermfg=210      ctermbg=015         cterm=none
 hi Cursor          ctermfg=210      ctermbg=000         cterm=none
+hi CursorLine      ctermfg=none     ctermbg=235         cterm=none
 hi Error           ctermfg=000      ctermbg=210         cterm=none
 
 hi Pmenu           ctermfg=036      ctermbg=000         cterm=none
