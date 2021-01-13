@@ -40,9 +40,9 @@ ipv6=${ipv6:-0}
 
 if [[ $ipv6 == 1 ]]; then
     if [[ $ipv4 == 1 ]]; then
-        curl "ipv4.icanhazip.com"
+        curl --silent "ipv4.icanhazip.com"
     fi
-    curl "ipv6.icanhazip.com"
+    curl --silent "ipv6.icanhazip.com"
 else
-    curl "ipv4.icanhazip.com"
+    curl --silent "ipv4.icanhazip.com"
 fi
