@@ -16,12 +16,12 @@ URxvt*scrollBar:                false
 URxvt*scrollBar_right:          false
 URxvt*scrollBar_floating:       false
 URxvt*depth:                    32
-URxvt*transparent:              false
+URxvt*transparent:              true
 URxvt*tintColor:                #666666
 URxvt*blurRadius:               8
 URxvt*fading:                   30
 URxvt*utmpInhibit:              false
-URxvt*urgentOnBell:             false
+URxvt*urgentOnBell:             true
 URxvt*visualBell:               false
 URxvt*mapAlert:                 false
 URxvt*mouseWheelScrollPage:     false
@@ -30,8 +30,9 @@ URxvt*foreground:               white
 URxvt*colorUL:                  yellow
 URxvt*cursorUnderline:          false
 URxvt*cursorBlink:              true
-URxvt*font:                     xft:DejaVu Sans Mono:size=12
-URxvt*saveLines:                4096
+URxvt*font:                     xft:DejaVu Sans Mono:size=16
+URxvt*internalBorder:           2
+URxvt*saveLines:                8192
 URxvt*buffered:                 true
 URxvt*hold:                     false
 URxvt*print-pipe:               cat > $HOME/$(echo urxvt.dump.$(date +'%Y%M%d-%H%m%S'))
@@ -41,8 +42,10 @@ URxvt*perl-ext:
 URxvt*url-launcher:             firefox
 URxvt.url-select.launcher:      firefox
 
+URxvt.keysym.Control-v:         perl:clipboard:paste
 URxvt.keysym.M-u:               perl:url-select:select_next
-URxvt.keysym.M-Escape:          perl:keyboard-select:activate
+URxvt.keysym.M-bracketleft:     perl:keyboard-select:activate
+URxvt.keysym.M-slash:           perl:keyboard-select:search
 URxvt.keysym.Control-Shift-J:   string:\033[1;5C
 URxvt.keysym.Control-Shift-K:   string:\033[1;5D
 
