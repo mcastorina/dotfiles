@@ -21,5 +21,5 @@ vcs_status() {
     fi
 }
 
-c=$(( 0x1$(hostname | md5sum - | head -c 6) % 232 ))
+c=$(( 0x3$(hostname | md5sum - | head -c 8) % 232 ))
 PROMPT='%2~ $(vcs_status)%F{'$c'}»%{$reset_color%} '
