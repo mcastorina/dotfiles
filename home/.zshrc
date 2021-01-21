@@ -72,7 +72,7 @@ alias mv="mv -i"
 alias cp="cp -i"
 alias feh="feh --scale-down"
 alias youtube-viewer="youtube-viewer --video-player=mpv --append-arg='--input-ipc-server /tmp/mpvsocket' --resolution=720p"
-alias mpv="mpv --input-ipc-server /tmp/mpvsocket"
+alias mpv="mpv --input-ipc-server=/tmp/mpvsocket"
 alias yay="yay --color=always"
 
 alias open="xdg-open"
@@ -101,7 +101,7 @@ bindkey '^Z' fancy-ctrl-z
 # if no options are given, then wget clipboard
 wget () {
     if [[ $# -eq 0 ]]; then
-        /usr/bin/wget -- $(xsel -ob)
+        /usr/bin/wget -- $(xclip -out -selection clipboard)
     else
         /usr/bin/wget $@
     fi
@@ -109,7 +109,7 @@ wget () {
 
 # mkdir && cd
 new () {
-    /usr/bin/mkdir "$@" && cd "${@: -1}"
+    /usr/bin/mkdir -p "$@" && cd "${@: -1}"
 }
 # mkdir && mv
 store () {
