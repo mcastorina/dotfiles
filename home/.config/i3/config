@@ -31,7 +31,7 @@ font pango:monospace 11
 floating_modifier $alt
 
 # start a terminal
-bindsym $alt+Return exec urxvt -cd "`xcwd`"
+bindsym $alt+Return exec --no-startup-id urxvt -cd "`xcwd`"
 
 # start ranger
 # bindsym $alt+space exec --no-startup-id urxvt -e ranger
@@ -41,8 +41,10 @@ bindsym $alt+q kill
 
 # start dmenu (a program launcher)
 bindsym $alt+d exec --no-startup-id rofi -show run
-bindsym $win+s exec --no-startup-id rofi -show ssh
+bindsym $win+s exec --no-startup-id rofi -show ssh -no-parse-known-hosts
 bindsym $win+w exec --no-startup-id rofi -show window
+# start rofi-bitwarden menu
+bindsym $alt+p exec --no-startup-id bwmenu
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.

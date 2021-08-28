@@ -10,7 +10,6 @@ $| = 1;
 
 # array of functions to output (left to right)
 my @order = (
-    \&print_storror,
     \&print_updates,
     \&print_music,
     \&print_link,
@@ -31,6 +30,7 @@ my $public_ip = "unknown";
 my $link_type = 0;
 my $date_type = 0;
 my $time_type = 0;
+my $last_spotify_data = "";
 
 sub print_item {
     my $color = $_[2] || $white;
@@ -68,21 +68,6 @@ sub print_items {
     alarm $interval;
 }
 
-
-sub print_storror {
-    try {
-        my $data = `cat \$(xdg-user-dir CACHE)/available-tens`;
-        if ($? != 0) {
-            return 0;
-        }
-        chop($data);
-        if (length($data) > 0) {
-            return print_item("storror", "$data", $red);
-        }
-    }
-    catch {}
-    return 0;
-}
 sub print_updates {
     try {
         my $data = `cat \$(xdg-user-dir CACHE)/available-updates | wc -l`;
@@ -196,10 +181,36 @@ sub spotify {
     }
     my $color = $white;
     my $data = `spotify-now -i "%artist - %title" -p "paused"`; chop($data);
-    if ($data eq "paused") {
-        $color = $dark_gray;
-    }
+    my $is_paused = $data eq "paused";
     my $data = `spotify-now -i "%artist - %title"`; chop($data);
+    if ($is_paused) {
+        $color = $dark_gray;
+    } elsif ($last_spotify_data ne $data) {
+        if (substr($data, 0, 4) eq "Ad -") {
+            # song -> ad transition
+            my $spotify_info = `pactl list sink-inputs | grep 'application.name = "Spotify"' -B 18 | tail -n 19`;
+            my $unmute = index($spotify_info, "Mute: no") != -1;
+            if ($unmute) {
+                my $start_idx = index($spotify_info, "#")+1;
+                my $end_idx = index($spotify_info, "\n");
+                my $id = substr($spotify_info, $start_idx, $end_idx-$start_idx);
+                `pactl set-sink-input-mute $id true`;
+            }
+        } elsif (substr($last_spotify_data, 0, 4) eq "Ad -") {
+            # ad -> song transition
+            my $spotify_info = `pactl list sink-inputs | grep 'application.name = "Spotify"' -B 18 | tail -n 19`;
+            my $mute = index($spotify_info, "Mute: yes") != -1;
+            my $start_idx = index($spotify_info, "#")+1;
+            my $end_idx = index($spotify_info, "\n");
+            my $id = substr($spotify_info, $start_idx, $end_idx-$start_idx);
+            if ($mute) {
+                `pactl set-sink-input-mute $id false`;
+            }
+        }
+    }
+    if ($last_spotify_data ne $data) {
+        $last_spotify_data = $data;
+    }
     my $current = $data;
     if (length($current) > 50) {
         $current = "$current    ";
@@ -414,13 +425,6 @@ while (<STDIN>) {
                 kill("ALRM", "$$");
             }
         }
-        elsif (/"name":"storror"/ and /"button":([0-9])/) {
-            my $button = $1;
-            if ($button == 1) {
-                `firefox https://www.storror.com/store/product/storror-tens-parkour-shoe-black`;
-                kill("ALRM", "$$");
-            }
-        }
         elsif (/"name":"pianobar"/ and /"button":([0-9])/) {
             my $button = $1;
             if ($button == 1) {
@@ -433,6 +437,21 @@ while (<STDIN>) {
             }
             elsif ($button == 3) {
                 `pianoctl n`;
+                kill("ALRM", "$$");
+            }
+        }
+        elsif (/"name":"spotify"/ and /"button":([0-9])/) {
+            my $button = $1;
+            if ($button == 1) {
+                `dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 2) {
+                `pkill spotify`;
+                kill("ALRM", "$$");
+            }
+            elsif ($button == 3) {
+                `dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next`;
                 kill("ALRM", "$$");
             }
         }
