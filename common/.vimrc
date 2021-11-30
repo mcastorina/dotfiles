@@ -1,4 +1,3 @@
-set nocompatible
 "install VimPlug if not already installed
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -15,12 +14,18 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-rails'
+" Plug 'tpope/vim-rails'
 Plug 'MarcWeber/vim-addon-mw-utils'
-Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
+" Plug 'tomtom/tlib_vim'
+" Plug 'garbas/vim-snipmate'
+" Plug 'honza/vim-snippets'
 Plug 'fatih/vim-go'
+Plug 'vim-scripts/paredit.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'zakuro9715/vim-vtools', { 'branch': 'main' }
+Plug 'dense-analysis/ale'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+Plug 'sevko/vim-nand2tetris-syntax'
 
 call plug#end()
 filetype plugin indent on
@@ -38,11 +43,9 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 15
 let g:netrw_sort_sequence = '[\/]$,*'
-" augroup ProjectDrawer
-"     autocmd!
-"     autocmd VimEnter * :Lexplore
-" augroup END
 
+" This is <C-Enter> (as mapped via URxvt.keysym in ~/.Xresources)
+nmap <C-Down> :let netrw_browse_split = 3<CR><CR>gT:let netrw_browse_split = 4<CR>
 
 syntax on
 set number
@@ -50,7 +53,26 @@ autocmd VimEnter * set number
 set t_Co=256
 colorscheme lapis256
 
-set backspace=indent,eol,start
+" associate .v with Vlang files
+autocmd BufRead,BufNewFile *.v set filetype=vlang
+" disable auto format
+let g:vfmt = 0
+
+" rust language server configuration
+autocmd BufReadPost *.rs setlocal filetype=rust
+set hidden
+
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ }
+
+" Automatically start language servers.
+let g:LanguageClient_autoStart = 1
+
+" Maps gd to goto definition
+nnoremap <silent> gd :ALEGoToDefinition<CR>
+
+"set backspace=indent,eol,start
 set clipboard=unnamedplus
 
 set tabstop=4
@@ -63,27 +85,17 @@ set cindent
 
 " set line cursor
 set cursorline
-set cursorlineopt=line
-
-set incsearch
-"set ignorecase
-"set smartcase
-set hlsearch
 
 set ff=unix
 set foldmethod=syntax
-"set nowrap
 
-let maplocalleader="\\"
+"let maplocalleader="\\"
 
 " Escape key also mapped as pushing j and k
 inoremap jk <Esc>
 inoremap kj <Esc>
 autocmd InsertEnter * set timeoutlen=75
 autocmd InsertLeave * set timeoutlen=1000
-
-" This unsets the "last search pattern" register
-nnoremap ,. :noh<CR>:<Backspace>
 
 " Semicolon in normal mode is the same as colon
 nnoremap ; :
@@ -102,8 +114,8 @@ nnoremap <C-H> <C-W>W
 nnoremap <C-J> :tabnext<CR>
 nnoremap <C-K> :tabprev<CR>
 " Corresponds to ~/.Xresources mapping for Ctrl-Shift-J/K
-nnoremap <ESC>[1;5C :tabmove +<CR>
-nnoremap <ESC>[1;5D :tabmove -<CR>
+nnoremap <C-Right> :tabmove +<CR>
+nnoremap <C-Left> :tabmove -<CR>
 
 " Highlight word (without going to the next one)
 nnoremap <C-N> *N
@@ -129,8 +141,6 @@ nnoremap + Yp<C-V>$r=
 vnoremap <C-O> !awk '{ORS = (NR\%2 ? FS : RS)} 1' \| column -t<CR>
 vnoremap <Enter> :<C-u>call SendFunnel()<CR>:<BS>
 
-set showcmd
-
 " End of line character
 set listchars=tab:│\ ,eol:¬
 set list
@@ -141,36 +151,6 @@ function! StripTrailingWhitespaces()
     %s/\s\+$//e
     call cursor(l, c)
 endfun
-
-" Printing
-set printexpr=PrintFile(v:fname_in,expand('%:t'))
-function PrintFile(fname, oname)
-    call system("lp -d PDF " . a:fname . " -t " . a:oname)
-    call delete(a:fname)
-    return v:shell_error
-endfunc
-
-" modify selected text using combining diacritics
-command! -range -nargs=0 Overline        call s:CombineSelection(<line1>, <line2>, '0305')
-command! -range -nargs=0 Underline       call s:CombineSelection(<line1>, <line2>, '0332')
-command! -range -nargs=0 DoubleUnderline call s:CombineSelection(<line1>, <line2>, '0333')
-command! -range -nargs=0 Strikethrough   call s:CombineSelection(<line1>, <line2>, '0336')
-
-function! s:CombineSelection(line1, line2, cp)
-  execute 'let char = "\u'.a:cp.'"'
-  execute a:line1.','.a:line2.'s/\%V[^[:cntrl:]]/&'.char.'/ge'
-endfunction
-
-" Compile LaTex files and remove extra files
-if !exists("g:latex_build") || !exists("g:latex_clean")
-    let g:latex_build = "/usr/bin/latexmk -interaction=nonstopmode -pdf -cd"
-    let g:latex_clean = "/usr/bin/latexmk -cd -c"
-endif
-function! LatexBuild()
-    let name = " " . shellescape(bufname("%")) . " "
-    execute "!" . g:latex_build . name . ";" . g:latex_clean . name
-endfunction
-command! -nargs=0 Latex call LatexBuild()
 
 function! s:get_visual_selection()
     " Why is this not a built-in Vim script function?!
